@@ -31,7 +31,7 @@ import ResizeObserver from 'resize-observer-polyfill';
 import { Subject, combineLatest, pipe } from 'rxjs';
 import { takeUntil, first, filter, throttleTime, map } from 'rxjs/operators';
 import { cloneArray, isEdge, isNavigationKey, flatten, mergeObjects, isIE } from '../core/utils';
-import { DataType } from '../data-operations/data-util';
+import { DataType, DataUtil } from '../data-operations/data-util';
 import { FilteringLogic, IFilteringExpression } from '../data-operations/filtering-expression.interface';
 import { IGroupByRecord } from '../data-operations/groupby-record.interface';
 import { ISortingExpression } from '../data-operations/sorting-expression.interface';
@@ -4035,7 +4035,7 @@ export class IgxGridBaseDirective extends DisplayDensityBase implements
      */
     public pinRow(rowID, index?): boolean {
         const rec = this.gridAPI.get_rec_by_id(rowID);
-        if (this.pinnedRecords.indexOf(rec) !== -1 || !rec || this.data.indexOf(rec) === -1) {
+        if (this.pinnedRecords.indexOf(rec) !== -1 || !rec || !this.existInData(rec)) {
             return false;
         }
         const row = this.gridAPI.get_row_by_key(rowID);
@@ -4055,6 +4055,16 @@ export class IgxGridBaseDirective extends DisplayDensityBase implements
         }
     }
 
+    private existInData(rec) : boolean {
+        let data = this.data;
+        if (this.transactions.enabled) {
+            data = this.gridAPI.get_all_data(this.transactions.enabled);
+            const exists = data.find(x => x[this.primaryKey] === rec[this.primaryKey]) !== undefined;
+            return exists;
+        }
+        return data.indexOf(rec) === -1
+    }
+
     /**
      * Unpin the row by its id.
      * @remarks
@@ -4067,7 +4077,9 @@ export class IgxGridBaseDirective extends DisplayDensityBase implements
     */
     public unpinRow(rowID) {
         const rec = this.gridAPI.get_rec_by_id(rowID);
-        const index =  this.pinnedRecords.indexOf(rec);
+        const index = this.primaryKey ?
+        this.pinnedRecords.findIndex(x => x[this.primaryKey] === rec[this.primaryKey]) :
+        this.pinnedRecords.indexOf(rec);
         if (index === -1 || !rec) {
             return false;
         }

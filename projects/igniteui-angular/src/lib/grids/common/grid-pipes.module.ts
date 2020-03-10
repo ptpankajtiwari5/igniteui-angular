@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
     IgxGridFilterConditionPipe,
     IgxGridTransactionPipe,
+    IgxGridPinnedTransactionPipe,
     IgxGridNotGroupedPipe,
     IgxGridTopLevelColumns,
     IgxGridCellStylesPipe,
@@ -19,6 +20,7 @@ import {
         IgxDecimalPipeComponent,
         IgxGridFilterConditionPipe,
         IgxGridTransactionPipe,
+        IgxGridPinnedTransactionPipe,
         IgxGridNotGroupedPipe,
         IgxGridTopLevelColumns,
         IgxGridCellStylesPipe,
@@ -31,6 +33,7 @@ import {
         IgxDecimalPipeComponent,
         IgxGridFilterConditionPipe,
         IgxGridTransactionPipe,
+        IgxGridPinnedTransactionPipe,
         IgxGridNotGroupedPipe,
         IgxGridTopLevelColumns,
         IgxGridCellStylesPipe,

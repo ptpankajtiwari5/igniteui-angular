@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IgxGridComponent, ColumnPinningPosition, RowPinningPosition, IgxGridRowComponent } from 'igniteui-angular';
+import { IgxGridComponent, ColumnPinningPosition, RowPinningPosition, IgxGridRowComponent, IgxGridTransaction, IgxTransactionService } from 'igniteui-angular';
 import { IPinningConfig } from 'projects/igniteui-angular/src/lib/grids/common/grid.interface';
 
 @Component({
-    providers: [],
+    providers: [{ provide: IgxGridTransaction, useClass: IgxTransactionService }],
     selector: 'app-grid-row-pinning-sample',
     styleUrls: ['grid-row-pinning.sample.css'],
     templateUrl: 'grid-row-pinning.sample.html'
@@ -95,6 +95,22 @@ export class GridRowPinningSampleComponent implements OnInit {
         } else {
             row.pin();
         }
+    }
+
+    public addRow() {
+        this.grid1.addRow({ 'ID': 'TEST', 'CompanyName': 'TEST COMPANY'});
+    }
+
+    public deleteRow(rowID) {
+        this.grid1.deleteRow(rowID);
+    }
+
+    public undo() {
+        this.grid1.transactions.undo();
+    }
+
+    public redo() {
+        this.grid1.transactions.redo();
     }
 
 }

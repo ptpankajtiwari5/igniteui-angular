@@ -65,6 +65,10 @@ export class IgxRowDirective<T extends IgxGridBaseDirective & GridType> implemen
      * ```
      */
     public get pinned(): boolean {
+        if (this.grid.transactions.enabled) {
+            const pinnedIds = this.grid.pinnedRecords.map(val => val[this.grid.primaryKey]);
+            return pinnedIds.indexOf(this.rowID) !== -1;
+        }
         return this.grid.pinnedRecords.indexOf(this.rowData) !== -1;
     }
     /**

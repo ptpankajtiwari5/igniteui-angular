@@ -168,8 +168,16 @@ export class IgxGridRowPinningPipe implements PipeTransform {
         if (pinnedRows.length === 0) {
             return collection;
         }
+        let result;
+        if (grid.transactions.enabled) {
+            const pinnedIDs = pinnedRows.map(val => val[grid.primaryKey]);
+            result = collection.filter((value, index) => {
+                return pinnedIDs.indexOf(value[grid.primaryKey]) === -1;
+            });
+            return result;
+        }
 
-        const result = collection.filter((value, index) => {
+        result = collection.filter((value, index) => {
             return pinnedRows.indexOf(value) === -1;
         });
         return result;

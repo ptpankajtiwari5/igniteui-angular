@@ -16,10 +16,14 @@
                     </igx-icon>
                 </ng-template>
             </igx-column>
-            <igx-column *ngFor="let c of columns" [sortable]="true" [field]="c.field" [header]="c.field" [width]="c.width" [pinned]='c.pinned' [groupable]='c.groupable'
+            <igx-column *ngFor="let c of columns" [editable]='true' [sortable]="true" [field]="c.field" [header]="c.field" [width]="c.width" [pinned]='c.pinned' [groupable]='c.groupable'
                 [hidden]='c.hidden'>
             </igx-column>
         </igx-grid>
         </div>
     </div>
 </div>
+<button (click)="addRow()">Add Row</button>
+<button (click)="deleteRow('ALFKI')">Delete Row</button>
+<button (click)="undo()">Undo</button>
+<button (click)="redo()">Redo</button>

@@ -5,6 +5,7 @@ import { DataUtil } from '../../data-operations/data-util';
 import { cloneArray } from '../../core/utils';
 import { GridType } from './grid.interface';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { TransactionType } from '../../services';
 
 /**
  * @hidden
@@ -125,6 +126,32 @@ export class IgxGridTransactionPipe implements PipeTransform {
         }
         return collection;
     }
+}
+
+/**
+ * @hidden
+ * @internal
+ */
+@Pipe({
+    name: 'gridPinnedTransaction',
+    pure: true
+})
+export class IgxGridPinnedTransactionPipe implements PipeTransform {
+    constructor(private gridAPI: GridBaseAPIService<IgxGridBaseDirective & GridType>) { }
+
+    transform(collection: any[], id: string, pipeTrigger: number) {
+        const grid: IgxGridBaseDirective = this.gridAPI.grid;
+
+        if (grid.transactions.enabled) {
+            const result = DataUtil.mergeTransactions(
+                cloneArray(collection),
+                grid.transactions.getAggregatedChanges(true),
+                grid.primaryKey, false, false);
+            return result;
+        }
+        return collection;
+    }
+
 }
 
 /**
