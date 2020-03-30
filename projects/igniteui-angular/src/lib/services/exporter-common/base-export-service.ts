@@ -290,11 +290,14 @@ export abstract class IgxBaseExporter {
             }
         }
 
-        if (grid.hasPinnedRecords) {
-
+        if (grid.hasPinnedRecords && !this._isTreeGrid) {
             const pinnedRecs = data.filter(x => grid.isRecordPinned(x));
             const unpinnedRecs = data.filter(x => !grid.isRecordPinned(x));
             data = [ ...pinnedRecs, ... unpinnedRecs];
+            this._indexOfLastPinnedRow = pinnedRecs.length - 1;
+        } else if (grid.hasPinnedRecords && this._isTreeGrid) {
+            const pinnedRecs = data.filter(x => grid.isRecordPinned(x.data)).map(x => ({ data: x.data, level: 0 }));
+            data = [...pinnedRecs, ...data];
             this._indexOfLastPinnedRow = pinnedRecs.length - 1;
         }
 

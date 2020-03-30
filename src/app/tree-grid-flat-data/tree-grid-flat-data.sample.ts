@@ -162,5 +162,7 @@ export class TreeGridFlatDataSampleComponent implements OnInit {
 
     public pinRow() {
         this.grid1.pinRow(4);
+        this.grid1.pinRow(0);
+        this.grid1.pinRow(11);
     }
 }
