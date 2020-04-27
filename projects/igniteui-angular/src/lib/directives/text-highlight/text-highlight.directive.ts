@@ -51,6 +51,10 @@ export interface IActiveHighlightInfo {
      * The index of the highlight.
      */
     index: number;
+    /**
+     * Custom meta data of the highlight.
+     */
+    metadata?: Map<string, any>;
 }
 
 @Directive({
@@ -179,9 +183,7 @@ export class IgxTextHighlightDirective implements AfterViewInit, AfterViewChecke
     @DeprecateProperty(`IgxTextHighlightDirective 'page' input property is deprecated.`)
     public page: number;
 
-    /**
-     * @hidden
-     */
+    @Input()
     public metadata: Map<string, any> = new Map<string, any>();
 
     /**
@@ -340,15 +342,16 @@ export class IgxTextHighlightDirective implements AfterViewInit, AfterViewChecke
         const column = group.columnIndex === undefined ? group.column : group.columnIndex;
         const row = group.rowIndex ? group.rowIndex : group.row;
 
-        let metadataRules = true;
+        let metadataMatch = true;
 
-        this.metadata.forEach(rule => {
-            if (!rule) {
-                metadataRules = false;
-            }
-        });
+        if (group.metadata) {
+            const metaData = this.metadata;
+            group.metadata.forEach((value, key) => {
+                metadataMatch = metaData.get(key) === value;
+            });
+        }
 
-        if (column === this.column && row === this.row && group.page === this.page && metadataRules) {
+        if (column === this.column && row === this.row && group.page === this.page && metadataMatch) {
             this.activate(group.index);
         }
     }

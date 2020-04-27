@@ -83,6 +83,13 @@ export class IgxGridCellComponent implements OnInit, OnChanges, OnDestroy {
     @Input()
     public rowData: any;
 
+
+    get searchMetadata(): Map<string, any> {
+        const meta = new Map<string, any>();
+        meta.set('dataIndex', this.row.viewIndex);
+        return meta;
+    }
+
     /**
      * Sets/gets the template of the cell.
      * ```html
@@ -918,19 +925,5 @@ export class IgxGridCellComponent implements OnInit, OnChanges, OnDestroy {
     public calculateSizeToFit(range: any): number {
         return Math.max(...Array.from(this.nativeElement.children)
             .map((child) => getNodeSizeViaRange(range, child)));
-    }
-
-    /**
-     * @hidden
-     * @internal
-     */
-    public setSearchMetadata(matchInfo: any) {
-        if (this.highlight !== undefined) {
-            if (matchInfo.rowIndex === this.rowIndex) {
-                this.highlight.metadata.set('rowIndexMatch', true);
-            } else {
-                this.highlight.metadata.set('rowIndexMatch', false);
-            }
-        }
     }
 }

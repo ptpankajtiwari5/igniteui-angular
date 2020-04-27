@@ -5824,15 +5824,6 @@ export class IgxGridBaseDirective extends DisplayDensityBase implements
         if (this.lastSearchInfo.matchInfoCache.length) {
             const matchInfo = this.lastSearchInfo.matchInfoCache[this.lastSearchInfo.activeMatchIndex];
             this.lastSearchInfo = { ...this.lastSearchInfo };
-
-            this.rowList.forEach((row) => {
-                if (row.cells) {
-                    row.cells.forEach((c) => {
-                        c.setSearchMetadata(matchInfo);
-                    });
-                }
-            });
-
             if (scroll !== false) {
                 this.scrollTo(matchInfo.row, matchInfo.column);
             }
@@ -5841,6 +5832,7 @@ export class IgxGridBaseDirective extends DisplayDensityBase implements
                 column: matchInfo.column,
                 row: matchInfo.row,
                 index: matchInfo.index,
+                metadata: matchInfo.metadata
             });
 
         } else {
@@ -5990,11 +5982,13 @@ export class IgxGridBaseDirective extends DisplayDensityBase implements
 
                     if (exactMatch) {
                         if (searchValue === searchText) {
+                            const metadata = new Map<string, any>();
+                            metadata.set('dataIndex', rowIndex);
                             this.lastSearchInfo.matchInfoCache.push({
                                 row: dataRow,
-                                rowIndex: rowIndex,
                                 column: c.field,
                                 index: 0,
+                                metadata: metadata
                             });
                         }
                     } else {
@@ -6002,11 +5996,13 @@ export class IgxGridBaseDirective extends DisplayDensityBase implements
                         let searchIndex = searchValue.indexOf(searchText);
 
                         while (searchIndex !== -1) {
+                            const metadata = new Map<string, any>();
+                            metadata.set('dataIndex', rowIndex);
                             this.lastSearchInfo.matchInfoCache.push({
                                 row: dataRow,
-                                rowIndex: rowIndex,
                                 column: c.field,
                                 index: occurenceIndex++,
+                                metadata: metadata
                             });
 
                             searchValue = searchValue.substring(searchIndex + searchText.length);
