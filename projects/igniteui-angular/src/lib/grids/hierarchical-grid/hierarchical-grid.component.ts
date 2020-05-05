@@ -474,6 +474,14 @@ export class IgxHierarchicalGridComponent extends IgxHierarchicalGridBaseCompone
         }
     }
 
+
+    protected setupColumns() {
+        if (this.parentIsland && this.parentIsland.childColumns.length > 0 && !this.autoGenerate) {
+            this.createColumnsList(this.parentIsland.childColumns.toArray());
+        }
+        super.setupColumns();
+    }
+
     protected onColumnsChanged(change: QueryList<IgxColumnComponent>) {
         Promise.resolve().then(() => {
             this.updateColumnList();

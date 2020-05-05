@@ -939,7 +939,7 @@ describe('IgxHierarchicalGrid Template Changing Scenarios #hGrid', () => {
         expect(child2Headers[2].nativeElement.innerText).toEqual('Col1');
     });
 
-    it('should render correct columns when setting columns for parent and child post init using ngFor', () => {
+    it('should render correct columns when setting columns for parent and child post init using ngFor', fakeAsync(() => {
         const row = hierarchicalGrid.getRowByIndex(0) as IgxHierarchicalRowComponent;
         UIInteractions.clickElement(row.expander);
         fixture.detectChanges();
@@ -949,6 +949,8 @@ describe('IgxHierarchicalGrid Template Changing Scenarios #hGrid', () => {
 
         fixture.componentInstance.parentCols = ['Col1', 'Col2'];
         fixture.componentInstance.islandCols1 = ['ID', 'ProductName', 'Col1'];
+        fixture.detectChanges();
+        tick();
         fixture.detectChanges();
         // check parent cols
         expect(hierarchicalGrid.columns.length).toBe(4);
@@ -961,9 +963,9 @@ describe('IgxHierarchicalGrid Template Changing Scenarios #hGrid', () => {
         expect(hierarchicalGrid.columns[0].field).toBe('ID');
         expect(hierarchicalGrid.columns[1].field).toBe('ProductName');
         expect(hierarchicalGrid.columns[2].field).toBe('Col1');
-    });
+    }));
 
-    it('should update columns for expanded child when adding column to row island', () => {
+    it('should update columns for expanded child when adding column to row island', fakeAsync(() => {
         const row = hierarchicalGrid.getRowByIndex(0) as IgxHierarchicalRowComponent;
         UIInteractions.clickElement(row.expander);
         fixture.detectChanges();
@@ -985,6 +987,8 @@ describe('IgxHierarchicalGrid Template Changing Scenarios #hGrid', () => {
         expect(child2Headers[2].nativeElement.innerText).toEqual('Col1');
 
         fixture.componentInstance.islandCols2.push('Col2');
+        fixture.detectChanges();
+        tick();
         fixture.detectChanges();
 
         child2Headers = child2Grid.queryAll(By.css('igx-grid-header'));
@@ -1007,9 +1011,9 @@ describe('IgxHierarchicalGrid Template Changing Scenarios #hGrid', () => {
         expect(colHeaders.length).toEqual(2);
         expect(colHeaders[0].nativeElement.innerText).toEqual('ID');
         expect(colHeaders[1].nativeElement.innerText).toEqual('ProductName');
-    });
+    }));
 
-    it('should update columns for rendered child that is collapsed when adding column to row island', () => {
+    it('should update columns for rendered child that is collapsed when adding column to row island', fakeAsync(() => {
         const row = hierarchicalGrid.getRowByIndex(0) as IgxHierarchicalRowComponent;
         UIInteractions.clickElement(row.expander);
         fixture.detectChanges();
@@ -1035,6 +1039,8 @@ describe('IgxHierarchicalGrid Template Changing Scenarios #hGrid', () => {
 
         fixture.componentInstance.islandCols2.push('Col2');
         fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
 
         UIInteractions.clickElement(row1.expander);
         fixture.detectChanges();
@@ -1045,7 +1051,7 @@ describe('IgxHierarchicalGrid Template Changing Scenarios #hGrid', () => {
         expect(child2Headers[1].nativeElement.innerText).toEqual('ProductName');
         expect(child2Headers[2].nativeElement.innerText).toEqual('Col1');
         expect(child2Headers[3].nativeElement.innerText).toEqual('Col2');
-    });
+    }));
 });
 
 describe('IgxHierarchicalGrid Runtime Row Island change Scenarios #hGrid', () => {
@@ -1068,8 +1074,8 @@ describe('IgxHierarchicalGrid Runtime Row Island change Scenarios #hGrid', () =>
         hierarchicalGrid = fixture.componentInstance.hgrid;
     }));
 
-    it('should allow changing row islands runtime in root grid.', () => {
-        const row = hierarchicalGrid.getRowByIndex(0) as IgxHierarchicalRowComponent;
+    it('should allow changing row islands runtime in root grid.', fakeAsync(() => {
+        let row = hierarchicalGrid.getRowByIndex(0) as IgxHierarchicalRowComponent;
         UIInteractions.clickElement(row.expander);
         fixture.detectChanges();
 
@@ -1081,6 +1087,8 @@ describe('IgxHierarchicalGrid Runtime Row Island change Scenarios #hGrid', () =>
 
         fixture.componentInstance.toggleRI = false;
         fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
 
         hGrids = fixture.debugElement.queryAll(By.css('igx-hierarchical-grid'));
         childGrids = hierarchicalGrid.hgridAPI.getChildGrids();
@@ -1090,13 +1098,16 @@ describe('IgxHierarchicalGrid Runtime Row Island change Scenarios #hGrid', () =>
 
         fixture.componentInstance.toggleRI = true;
         fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
 
         hGrids = fixture.debugElement.queryAll(By.css('igx-hierarchical-grid'));
         childGrids = hierarchicalGrid.hgridAPI.getChildGrids();
+        row = hierarchicalGrid.getRowByIndex(0) as IgxHierarchicalRowComponent;
         expect(childGrids.length).toBe(1);
         expect(hGrids.length).toBe(2);
         expect(row.expander).not.toBe(undefined);
-    });
+    }));
 
     it('should allow changing row islands runtime in child grid.', () => {
         const row = hierarchicalGrid.getRowByIndex(0) as IgxHierarchicalRowComponent;
