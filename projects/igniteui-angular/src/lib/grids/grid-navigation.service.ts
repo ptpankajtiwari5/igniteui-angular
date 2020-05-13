@@ -38,6 +38,11 @@ export class IgxGridNavigationService {
 
     dispatchEvent(event: KeyboardEvent) {
         const key = event.key.toLowerCase();
+        const elem = (event.target as Element);
+        if (!this.grid.crudService.cell && NAVIGATION_KEYS.has(key) && elem.className !== 'igx-grid__tbody-content') {
+            return;
+        }
+
         if (!this.activeNode || !(SUPPORTED_KEYS.has(key) || (key === 'tab' && this.grid.crudService.cell))) { return; }
         const shift = event.shiftKey;
         const ctrl = event.ctrlKey;
