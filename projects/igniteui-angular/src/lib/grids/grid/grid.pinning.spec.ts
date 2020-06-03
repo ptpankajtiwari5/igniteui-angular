@@ -26,7 +26,7 @@ import { PinOnInitAndSelectionComponent,
 import { IgxGridComponent } from './grid.component';
 // tslint:disable: no-use-before-declare
 
-describe('IgxGrid - Column Pinning #grid', () => {
+xdescribe('IgxGrid - Column Pinning #grid', () => {
     const DEBOUNCETIME = 30;
 
     configureTestSuite();
