@@ -13,6 +13,8 @@ All notable changes for each version of this project will be documented in this 
     - When triggering an export of the grid via the toolbar and the export takes more than 500 milliseconds, the export button becomes disabled and an indeterminate progress bar is shown at the bottom of the toolbar until the export is finished.
 - ` IgxExcelExporterService`
     - Added `worksheetName` property to the `IgxExcelExporterOptions`, that allows setting the name of the worksheet.
+- `IgxTimePicker`
+    - Added a custom label functionality.
 
 ## 10.1.0
 
