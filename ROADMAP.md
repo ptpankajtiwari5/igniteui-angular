@@ -2,7 +2,23 @@
 
 # Current Milestone
 
-## Milestone 14 (Due by November, 2020)
+## Milestone 15 (Due by February, 2021)
+
+1. IgxDatePicker refactoring [#6483](https://github.com/IgniteUI/igniteui-angular/issues/6483)
+2. [igx-grid] Export Excel current igx-grid ordered by Group By [#5927](https://github.com/IgniteUI/igniteui-angular/issues/5927)
+3. Filters should support filtering by formatted value [#8009](https://github.com/IgniteUI/igniteui-angular/issues/8009)
+4. Auto select children in tree grid [#8040](https://github.com/IgniteUI/igniteui-angular/issues/8040)
+
+## Going down the road
+
+1. Tile Manager
+2. Visual Cell merging [#3514](https://github.com/IgniteUI/igniteui-angular/issues/3514)
+3. RTL Support across Ignite UI for Angular components [#5905](https://github.com/IgniteUI/igniteui-angular/issues/5905)
+4. Scheduler component [#8097](https://github.com/IgniteUI/igniteui-angular/pull/8479/files)
+
+#Previous Milestones
+
+## Milestone 14 (Released November 13th, 2020)
 
 1. Grid Toolbar refactoring [#8055](https://github.com/IgniteUI/igniteui-angular/issues/8055)
 2. Expose an event that indicates that the Grid is fully loaded [#7924](https://github.com/IgniteUI/igniteui-angular/issues/7924)
