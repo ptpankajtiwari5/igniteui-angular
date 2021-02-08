@@ -3,9 +3,7 @@ import { IgxCalendarComponent } from '../calendar/public_api';
 import { InteractionMode } from '../core/enums';
 import { IgxDatePickerActionsDirective } from './date-picker.directives';
 
-/**
- * @hidden
- */
+/** @hidden */
 @Component({
     selector: 'igx-calendar-container',
     styles: [':host {display: block;}'],
@@ -30,22 +28,24 @@ export class IgxCalendarContainerComponent {
     @Input()
     public datePickerActions: IgxDatePickerActionsDirective;
 
+    /** @hidden @internal */
     @Output()
-    public onClose = new EventEmitter();
+    public calendarClose = new EventEmitter();
 
+    /** @hidden @internal */
     @Output()
-    public onTodaySelection = new EventEmitter();
+    public todaySelection = new EventEmitter();
 
     @HostBinding('class.igx-date-picker')
     public styleClass = 'igx-date-picker';
 
     @HostBinding('class.igx-date-picker--dropdown')
-    get dropdownCSS(): boolean {
+    public get dropdownCSS(): boolean {
         return this.mode === InteractionMode.DropDown;
     }
 
     @HostBinding('class.igx-date-picker--vertical')
-    get verticalCSS(): boolean {
+    public get verticalCSS(): boolean {
         return this.vertical && this.mode === InteractionMode.Dialog;
     }
 
@@ -53,29 +53,21 @@ export class IgxCalendarContainerComponent {
     @HostListener('keydown.alt.arrowup', ['$event'])
     public onEscape(event) {
         event.preventDefault();
-        this.onClose.emit();
+        this.calendarClose.emit();
     }
 
-    /**
-     * Returns whether the date-picker is in readonly dialog mode.
-     *
-     * @hidden
-     */
+    /**  Returns whether the date-picker is in readonly dialog mode. */
     public get isReadonly() {
         return this.mode === InteractionMode.Dialog;
     }
 
-    /**
-     * Emits close event for the calendar.
-     */
+    /** Emits close event for the calendar. */
     public closeCalendar() {
-        this.onClose.emit();
+        this.calendarClose.emit();
     }
 
-    /**
-     * Emits today selection event for the calendar.
-     */
+    /**  Emits today selection event for the calendar. */
     public triggerTodaySelection() {
-        this.onTodaySelection.emit();
+        this.todaySelection.emit();
     }
 }

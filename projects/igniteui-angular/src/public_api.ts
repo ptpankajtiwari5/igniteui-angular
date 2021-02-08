@@ -63,7 +63,7 @@ export * from './lib/carousel/carousel.component';
 export * from './lib/checkbox/checkbox.component';
 export * from './lib/chips/public_api';
 export * from './lib/combo/public_api';
-export * from './lib/date-picker/date-picker.component';
+export * from './lib/date-picker/public_api';
 export * from './lib/dialog/dialog.component';
 export * from './lib/drop-down/public_api';
 export * from './lib/grids/common/enums';

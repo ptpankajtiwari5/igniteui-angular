@@ -92,6 +92,11 @@ export const PredefinedFormatOptions = mkenum({
 });
 export type PredefinedFormatOptions = (typeof PredefinedFormatOptions)[keyof typeof PredefinedFormatOptions];
 
+export const HeaderOrientation = mkenum({
+    Horizontal: 'horizontal',
+    Vertical: 'vertical'
+});
+
 /**
  * Date Picker displays a popup calendar that lets users select a single date.
  *
@@ -230,7 +235,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      * ```
      */
     @Input()
-    public vertical = false; // dialogHeader?
+    public headerOrientation = HeaderOrientation.Horizontal;
 
     /**
      * Gets/Sets the today button's label.
@@ -241,7 +246,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      * ```
      */
     @Input()
-    public todayButtonLabel: string; // ?
+    public todayButtonLabel: string;
 
     /**
      * *Gets/Sets the cancel button's label.
@@ -252,7 +257,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      * ```
      */
     @Input()
-    public cancelButtonLabel: string; // ?
+    public cancelButtonLabel: string;
 
     /**
      * Gets/Sets the interaction mode - dialog or drop down.
@@ -962,6 +967,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     private subscribeToDateEditorEvents(): void {
         this.dateTimeEditor.valueChange.pipe(
             takeUntil(this._destroy$)).subscribe(newDate => {
+                this.value = newDate;
                 this.emitValueChange(this.value, newDate);
             });
         this.dateTimeEditor.validationFailed.pipe(
@@ -1032,7 +1038,8 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
 
     private _initializeCalendarContainer(componentInstance: IgxCalendarContainerComponent) {
         this.calendar = componentInstance.calendar;
-        const isVertical = (this.vertical && this.mode === InteractionMode.Dialog); // TODO
+        const isVertical = this.headerOrientation ===
+            HeaderOrientation.Vertical && this.mode === InteractionMode.Dialog;
         this.calendar.hasHeader = this.hasHeader;
         this.calendar.formatOptions = this.formatOptions;
         this.calendar.formatViews = this.formatViews;
