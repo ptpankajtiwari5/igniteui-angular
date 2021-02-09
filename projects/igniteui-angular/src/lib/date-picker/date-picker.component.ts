@@ -25,7 +25,7 @@ import {
 } from '../services/public_api';
 import { DateRangeDescriptor } from '../core/dates/dateRange';
 import { EditorProvider } from '../core/edit-provider';
-import { KEYS, isEqual, IBaseEventArgs, mkenum } from '../core/utils';
+import { KEYS, isEqual } from '../core/utils';
 import { IgxDatePickerActionsDirective } from './date-picker.directives';
 import { IgxCalendarContainerComponent } from './calendar-container.component';
 import { InteractionMode } from '../core/enums';
@@ -37,61 +37,12 @@ import { IgxPickerToggleComponent } from '../date-range-picker/public_api';
 import { DeprecateMethod, DeprecateProperty } from '../core/deprecateDecorators';
 import { DatePickerUtil } from './date-picker.utils';
 import { HeaderOrientation } from '../date-common/types';
+import {
+    IDatePickerDisabledDateEventArgs, IDatePickerValidationFailedEventArgs,
+    IFormatOptions, IFormatViews
+} from './date-picker.common';
 
 let NEXT_ID = 0;
-
-/**
- * This interface is used to provide information about date picker reference and its current value
- * when onDisabledDate event is fired.
- */
-export interface IDatePickerDisabledDateEventArgs extends IBaseEventArgs {
-    datePicker: IgxDatePickerComponent;
-    currentValue: Date;
-}
-
-/**
- * This interface is used to provide information about date picker reference and its previously valid value
- * when onValidationFailed event is fired.
- */
-export interface IDatePickerValidationFailedEventArgs extends IBaseEventArgs {
-    datePicker: IgxDatePickerComponent;
-    prevValue: Date;
-}
-
-/**
- * This interface is used to configure calendar format view options.
- */
-export interface IFormatViews {
-    day?: boolean;
-    month?: boolean;
-    year?: boolean;
-}
-
-/**
- * This interface is used to configure calendar format options.
- */
-export interface IFormatOptions {
-    day?: string;
-    month?: string;
-    weekday?: string;
-    year?: string;
-}
-
-/**
- * This enumeration is used to configure the date picker to operate with pre-defined format option used in Angular DatePipe.
- * 'https://angular.io/api/common/DatePipe'
- * 'shortDate': equivalent to 'M/d/yy' (6/15/15).
- * 'mediumDate': equivalent to 'MMM d, y' (Jun 15, 2015).
- * 'longDate': equivalent to 'MMMM d, y' (June 15, 2015).
- * 'fullDate': equivalent to 'EEEE, MMMM d, y' (Monday, June 15, 2015).
- */
-export const PredefinedFormatOptions = mkenum({
-    ShortDate: 'shortDate',
-    MediumDate: 'mediumDate',
-    LongDate: 'longDate',
-    FullDate: 'fullDate'
-});
-export type PredefinedFormatOptions = (typeof PredefinedFormatOptions)[keyof typeof PredefinedFormatOptions];
 
 /**
  * Date Picker displays a popup calendar that lets users select a single date.
@@ -99,7 +50,7 @@ export type PredefinedFormatOptions = (typeof PredefinedFormatOptions)[keyof typ
  * @igxModule IgxDatePickerModule
  * @igxTheme igx-calendar-theme, igx-icon-theme
  * @igxGroup Scheduling
- * @igxKeywords  datepicker, calendar, schedule, date
+ * @igxKeywords datepicker, calendar, schedule, date
  * @example
  * ```html
  * <igx-date-picker [(ngModel)]="selectedDate"></igx-date-picker>
@@ -427,7 +378,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     // eslint-disable-next-line @angular-eslint/no-output-on-prefix
     @Output()
     @DeprecateProperty('onDisabledDate has been deprecated.')
-    public onDisabledDate = new EventEmitter<IDatePickerDisabledDateEventArgs>();
+    public onDisabledDate = new EventEmitter<IDatePickerDisabledDateEventArgs>(); // TODO: remove event args as well
 
     @Output()
     public selected = new EventEmitter<Date>();

@@ -12,7 +12,6 @@ import { IgxInputGroupModule } from '../input-group/public_api';
 import { IgxCalendarContainerComponent } from './calendar-container.component';
 import { IgxDatePickerComponent } from './date-picker.component';
 import { IgxDatePickerActionsDirective, IgxDatePickerTemplateDirective } from './date-picker.directives';
-import { DatePickerDisplayValuePipe, DatePickerInputValuePipe } from './date-picker.pipes';
 
 /** @hidden */
 @NgModule({
@@ -20,9 +19,7 @@ import { DatePickerDisplayValuePipe, DatePickerInputValuePipe } from './date-pic
         IgxDatePickerComponent,
         IgxCalendarContainerComponent,
         IgxDatePickerActionsDirective,
-        IgxDatePickerTemplateDirective,
-        DatePickerDisplayValuePipe,
-        DatePickerInputValuePipe
+        IgxDatePickerTemplateDirective
     ],
     entryComponents: [
         IgxCalendarContainerComponent
@@ -31,8 +28,6 @@ import { DatePickerDisplayValuePipe, DatePickerInputValuePipe } from './date-pic
         IgxDatePickerComponent,
         IgxDatePickerTemplateDirective,
         IgxDatePickerActionsDirective,
-        DatePickerDisplayValuePipe,
-        DatePickerInputValuePipe,
         IgxInputGroupModule
     ],
     imports: [
