@@ -32,10 +32,11 @@ import { InteractionMode } from '../core/enums';
 import { fadeIn, fadeOut } from '../animations/fade';
 import { PickersBaseDirective } from '../date-common/pickers-base.directive';
 import { DisplayDensityToken, IDisplayDensityOptions } from '../core/density';
-import { IgxDateTimeEditorDirective } from '../directives/date-time-editor/public_api';
+import { DatePart, IgxDateTimeEditorDirective } from '../directives/date-time-editor/public_api';
 import { IgxPickerToggleComponent } from '../date-range-picker/public_api';
 import { DeprecateMethod, DeprecateProperty } from '../core/deprecateDecorators';
 import { DatePickerUtil } from './date-picker.utils';
+import { HeaderOrientation } from '../date-common/types';
 
 let NEXT_ID = 0;
 
@@ -91,11 +92,6 @@ export const PredefinedFormatOptions = mkenum({
     FullDate: 'fullDate'
 });
 export type PredefinedFormatOptions = (typeof PredefinedFormatOptions)[keyof typeof PredefinedFormatOptions];
-
-export const HeaderOrientation = mkenum({
-    Horizontal: 'horizontal',
-    Vertical: 'vertical'
-});
 
 /**
  * Date Picker displays a popup calendar that lets users select a single date.
@@ -409,7 +405,6 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         this.onChangeCallback(date);
     }
 
-
     /**
      * Emitted when the picker's value changes.
      *
@@ -449,22 +444,6 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     public validationFailed = new EventEmitter<IDatePickerValidationFailedEventArgs>(); // TODO: bind to validationFailed of date editor
 
     /** @hidden @internal */
-    @ViewChild(IgxDateTimeEditorDirective)
-    public dateTimeEditor: IgxDateTimeEditorDirective;
-
-    /** @hidden @internal */
-    @ViewChild(IgxInputGroupComponent)
-    public inputGroup: IgxInputGroupComponent;
-
-    /** @hidden @internal */
-    @ViewChild(IgxLabelDirective)
-    public labelDirective: IgxLabelDirective;
-
-    /** @hidden @internal */
-    @ViewChild(IgxInputDirective)
-    public inputDirective: IgxInputDirective;
-
-    /** @hidden @internal */
     @ContentChildren(IgxPickerToggleComponent, { descendants: true })
     public toggleComponents: QueryList<IgxPickerToggleComponent>;
 
@@ -477,12 +456,28 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     public headerTemplate: IgxCalendarHeaderTemplateDirective;
 
     /** @hidden @internal */
+    @ViewChild(IgxDateTimeEditorDirective)
+    private dateTimeEditor: IgxDateTimeEditorDirective;
+
+    /** @hidden @internal */
+    @ViewChild(IgxInputGroupComponent)
+    private inputGroup: IgxInputGroupComponent;
+
+    /** @hidden @internal */
+    @ViewChild(IgxLabelDirective)
+    private labelDirective: IgxLabelDirective;
+
+    /** @hidden @internal */
+    @ViewChild(IgxInputDirective)
+    private inputDirective: IgxInputDirective;
+
+    /** @hidden @internal */
     @ContentChild(IgxCalendarSubheaderTemplateDirective)
-    public subheaderTemplate: IgxCalendarSubheaderTemplateDirective;
+    private subheaderTemplate: IgxCalendarSubheaderTemplateDirective;
 
     /** @hidden @internal */
     @ContentChild(IgxDatePickerActionsDirective)
-    public datePickerActionsDirective: IgxDatePickerActionsDirective;
+    private datePickerActionsDirective: IgxDatePickerActionsDirective;
 
     private get dialogOverlaySettings(): OverlaySettings {
         return Object.assign({}, this._dialogOverlaySettings, this.overlaySettings);
@@ -495,7 +490,6 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     private _value: Date;
     private _empty = true;
     private _format: string;
-    private hasHeader = true;
     private _componentID: string;
     private _destroy$ = new Subject();
     private _ngControl: NgControl = null;
@@ -561,24 +555,6 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             return;
         }
         return '';
-    }
-
-    /** Gets the context passed to the input group template. */
-    @DeprecateProperty('Context has been deprecated.')
-    public get context() {
-        return {
-            disabled: this.disabled,
-            disabledDates: this.disabledDates,
-            displayData: this.applyCustomFormat(this.value),
-            isSpinLoop: this.isSpinLoop,
-            label: this.label,
-            locale: this.locale,
-            mask: this.mask,
-            mode: this.mode,
-            specialDates: this.specialDates,
-            value: this.value,
-            openDialog: () => this.open()
-        };
     }
 
     /** @hidden @internal */
@@ -675,7 +651,6 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             return;
         }
 
-        this.hasHeader = this.isDropdown;
         const overlaySettings = Object.assign({}, this.isDropdown
             ? this.dropDownOverlaySettings
             : this.dialogOverlaySettings
@@ -721,7 +696,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     public close(): void {
         if (!this.collapsed) {
             this._overlayService.hide(this._componentID);
-            // TODO: detach()?
+            // TODO: detach()
         }
     }
 
@@ -768,13 +743,44 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         this.emitValueChange(oldValue, this.value);
     }
 
-    /** Clear the input field, date picker value and calendar selection. */
+    /**
+     * Clear the input field, date picker value and calendar selection.
+     *
+     * @example
+     * ```typescript
+     * this.datePicker.clear();
+     * ```
+     */
     public clear(): void {
         if (!this.disabled) {
             this.dateTimeEditor.clear();
             this.deselect();
             this._empty = true;
         }
+    }
+
+    /**
+     * Increment a specified `DatePart`.
+     *
+     * @example
+     * ```typescript
+     * this.datePicker.increment(DatePart.Date);
+     * ```
+     */
+    public increment(datePart?: DatePart): void {
+        this.dateTimeEditor.increment(datePart);
+    }
+
+    /**
+     * Decrement a specified `DatePart`
+     *
+     * @example
+     * ```typescript
+     * this.datePicker.decrement(DatePart.Date);
+     * ```
+     */
+    public decrement(datePart?: DatePart): void {
+        this.dateTimeEditor.decrement(datePart);
     }
 
     //#region Control Value Accessor
@@ -843,6 +849,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         }
 
         this.subscribeToOverlayEvents();
+        this.subscribeToInputGroupClick();
         this.subscribeToDateEditorEvents();
 
         if (this._ngControl) {
@@ -912,7 +919,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     }
 
     /** @hidden @internal */
-    public onKeyDown(event) {
+    public onKeyDown(event: KeyboardEvent) {
         switch (event.key) {
             case KEYS.UP_ARROW:
             case KEYS.UP_ARROW_IE:
@@ -1030,6 +1037,16 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             });
     }
 
+    private subscribeToInputGroupClick() {
+        fromEvent(this.inputGroup.element.nativeElement, 'click')
+            .pipe(takeUntil(this._destroy$))
+            .subscribe(() => {
+                if (!this.isDropdown) {
+                    this.open();
+                }
+            });
+    }
+
     private emitValueChange(oldValue: Date, newValue: Date) {
         if (!isEqual(oldValue, newValue)) {
             this.valueChange.emit(newValue);
@@ -1038,9 +1055,8 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
 
     private _initializeCalendarContainer(componentInstance: IgxCalendarContainerComponent) {
         this.calendar = componentInstance.calendar;
-        const isVertical = this.headerOrientation ===
-            HeaderOrientation.Vertical && this.mode === InteractionMode.Dialog;
-        this.calendar.hasHeader = this.hasHeader;
+        const isVertical = this.headerOrientation === HeaderOrientation.Vertical;
+        this.calendar.hasHeader = !this.isDropdown;
         this.calendar.formatOptions = this.formatOptions;
         this.calendar.formatViews = this.formatViews;
         this.calendar.locale = this.locale;

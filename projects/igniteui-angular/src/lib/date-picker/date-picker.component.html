@@ -10,34 +10,31 @@
     </igx-suffix>
 </ng-template>
 
-<ng-template #datePicker>
-    <igx-input-group [suppressInputAutofocus]="this.isDropdown">
-        <igx-prefix *ngIf="!this.toggleComponents.length" (click)="toggle()">
-            <ng-container *ngTemplateOutlet="defToggleIcon"></ng-container>
-        </igx-prefix>
+<igx-input-group [suppressInputAutofocus]="this.isDropdown">
+    <igx-prefix *ngIf="!this.toggleComponents.length" (click)="toggle()">
+        <ng-container *ngTemplateOutlet="defToggleIcon"></ng-container>
+    </igx-prefix>
 
-        <input igxInput [igxDateTimeEditor]="this.inputFormat" [displayFormat]="this.displayFormat" [value]="this.value"
-            [placeholder]="this.placeholder" role="combobox" aria-haspopup="dialog"
-            [attr.aria-expanded]="!this.collapsed" [attr.aria-labelledby]="this.label"
-            [readonly]="!this.isDropdown" [igxTextSelection]="this.isDropdown">
+    <input class="igx-date-picker__input-date" igxInput [igxDateTimeEditor]="this.inputFormat"
+        [suppressFocus]="!this.isDropdown" [preventSpinOnWheel]="!this.isDropdown" [displayFormat]="this.displayFormat"
+        [value]="this.value" [placeholder]="this.placeholder" role="combobox" aria-haspopup="dialog"
+        [attr.aria-expanded]="!this.collapsed" [attr.aria-labelledby]="this.label" [readonly]="!this.isDropdown"
+        [igxTextSelection]="this.isDropdown">
 
-        <igx-suffix>
-            <ng-container *ngTemplateOutlet="defClearIcon"></ng-container>
-        </igx-suffix>
+    <igx-suffix>
+        <ng-container *ngTemplateOutlet="defClearIcon"></ng-container>
+    </igx-suffix>
 
-        <ng-container ngProjectAs="[igxLabel]">
-            <ng-content select="[igxLabel]"></ng-content>
-        </ng-container>
-        <ng-container ngProjectAs="igx-prefix">
-            <ng-content select="igx-prefix,[igxPrefix]"></ng-content>
-        </ng-container>
-        <ng-container ngProjectAs="igx-suffix">
-            <ng-content select="igx-suffix,[igxSuffix]"></ng-content>
-        </ng-container>
-        <ng-container ngProjectAs="igx-hint">
-            <ng-content select="igx-hint,[igxHint]"></ng-content>
-        </ng-container>
-    </igx-input-group>
-</ng-template>
-
-<ng-container *ngTemplateOutlet="datePicker; context: context"></ng-container>
+    <ng-container ngProjectAs="[igxLabel]">
+        <ng-content select="[igxLabel]"></ng-content>
+    </ng-container>
+    <ng-container ngProjectAs="igx-prefix">
+        <ng-content select="igx-prefix,[igxPrefix]"></ng-content>
+    </ng-container>
+    <ng-container ngProjectAs="igx-suffix">
+        <ng-content select="igx-suffix,[igxSuffix]"></ng-content>
+    </ng-container>
+    <ng-container ngProjectAs="igx-hint">
+        <ng-content select="igx-hint,[igxHint]"></ng-content>
+    </ng-container>
+</igx-input-group>

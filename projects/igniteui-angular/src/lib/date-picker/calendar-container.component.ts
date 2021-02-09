@@ -14,7 +14,7 @@ export class IgxCalendarContainerComponent {
     public calendar: IgxCalendarComponent;
 
     @Input()
-    public mode: InteractionMode = InteractionMode.Dialog;
+    public mode: InteractionMode = InteractionMode.DropDown;
 
     @Input()
     public vertical = false;
