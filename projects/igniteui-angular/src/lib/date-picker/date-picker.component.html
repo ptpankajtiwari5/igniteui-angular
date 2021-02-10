@@ -17,9 +17,8 @@
 
     <input class="igx-date-picker__input-date" igxInput [igxDateTimeEditor]="this.inputFormat"
         [suppressFocus]="!this.isDropdown" [preventSpinOnWheel]="!this.isDropdown" [displayFormat]="this.displayFormat"
-        [value]="this.value" [placeholder]="this.placeholder" role="combobox" aria-haspopup="dialog"
-        [attr.aria-expanded]="!this.collapsed" [attr.aria-labelledby]="this.label" [readonly]="!this.isDropdown"
-        [igxTextSelection]="this.isDropdown">
+        [placeholder]="this.placeholder" role="combobox" aria-haspopup="dialog" [attr.aria-expanded]="!this.collapsed"
+        [attr.aria-labelledby]="this.label" [readonly]="!this.isDropdown" [igxTextSelection]="this.isDropdown">
 
     <igx-suffix>
         <ng-container *ngTemplateOutlet="defClearIcon"></ng-container>
