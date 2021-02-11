@@ -1,6 +1,6 @@
 import {
     Component, ContentChild, EventEmitter, HostBinding, Input,
-    OnDestroy, Output, ViewChild, ElementRef, Inject, ChangeDetectorRef, HostListener,
+    OnDestroy, Output, ViewChild, ElementRef, Inject, HostListener,
     NgModuleRef, OnInit, AfterViewInit, Injector, AfterViewChecked, ContentChildren,
     QueryList, Renderer2, LOCALE_ID, Optional, OnChanges, SimpleChanges
 } from '@angular/core';
@@ -27,7 +27,7 @@ import { DateRangeDescriptor, DateRangeType } from '../core/dates/dateRange';
 import { EditorProvider } from '../core/edit-provider';
 import { KEYS, isEqual, IBaseCancelableBrowserEventArgs, IBaseEventArgs } from '../core/utils';
 import { IgxDatePickerActionsDirective } from './date-picker.directives';
-import { IgxCalendarContainerComponent } from './calendar-container.component';
+import { IgxCalendarContainerComponent } from '../date-common/calendar-container/calendar-container.component';
 import { InteractionMode } from '../core/enums';
 import { fadeIn, fadeOut } from '../animations/fade';
 import { PickersBaseDirective } from '../date-common/pickers-base.directive';
@@ -41,6 +41,7 @@ import {
     IDatePickerDisabledDateEventArgs, IDatePickerValidationFailedEventArgs,
     IFormatOptions, IFormatViews
 } from './date-picker.common';
+import { IgxIconComponent } from '../icon/public_api';
 
 let NEXT_ID = 0;
 
@@ -425,11 +426,15 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      * ```
      */
     @Output()
-    public validationFailed = new EventEmitter<IDatePickerValidationFailedEventArgs>(); // TODO: bind to validationFailed of date editor
+    public validationFailed = new EventEmitter<IDatePickerValidationFailedEventArgs>();
 
     /** @hidden @internal */
     @ContentChildren(IgxPickerToggleComponent, { descendants: true })
     public toggleComponents: QueryList<IgxPickerToggleComponent>;
+
+    /** @hidden @internal */
+    @ContentChildren(IgxIconComponent)
+    public iconComponents: QueryList<IgxIconComponent>;
 
     /** @hidden @internal */
     @ContentChild(IgxLabelDirective)
@@ -472,8 +477,6 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     }
 
     private _value: Date;
-    private _empty = true;
-    private _format: string;
     private _componentID: string;
     private destroy$ = new Subject();
     private _ngControl: NgControl = null;
@@ -514,7 +517,6 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     private _onValidatorChange: () => void = noop;
 
     constructor(public element: ElementRef,
-        private _cdr: ChangeDetectorRef,
         @Inject(LOCALE_ID) protected _localeId: string,
         @Inject(IgxOverlayService) private _overlayService: IgxOverlayService,
         private _moduleRef: NgModuleRef<any>,
@@ -543,7 +545,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
 
     /** @hidden @internal */
     public get empty() {
-        return this._empty;
+        return !this.value;
     }
 
     /** @hidden @internal */
@@ -706,6 +708,13 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         this.value = value;
         this.emitValueChange(oldValue, this.value);
         this.selected.emit(value);
+
+        if (DatePickerUtil.validateMinMax(value, this.minValue, this.maxValue)) {
+            this.validationFailed.emit({
+                datePicker: this,
+                prevValue: oldValue
+            });
+        }
     }
 
     /**
@@ -735,7 +744,6 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         if (!this.disabled) {
             this.dateTimeEditor.clear();
             this.deselect();
-            this._empty = true;
         }
     }
 
@@ -805,7 +813,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         }
         Object.assign(errors, DatePickerUtil.validateMinMax(value, this.minValue, this.maxValue));
 
-        return Object.keys(errors).length > 0 ? errors : null;;
+        return Object.keys(errors).length > 0 ? errors : null;
     }
     //#endregion
 
@@ -815,10 +823,10 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             this.inputFormat = DatePickerUtil.getDefaultInputFormat(this.locale || 'en')
                 || DatePickerUtil.DEFAULT_INPUT_FORMAT;
         }
-        if (changes['displayFormat']) {
+        if (changes['displayFormat'] && this.dateTimeEditor) {
             this.dateTimeEditor.displayFormat = this.displayFormat;
         }
-        if (changes['inputFormat']) {
+        if (changes['inputFormat'] && this.dateTimeEditor) {
             this.dateTimeEditor.inputFormat = this.inputFormat;
         }
     }
@@ -843,24 +851,9 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             this._statusChanges$ =
                 this._ngControl.statusChanges.subscribe(this.onStatusChanged.bind(this));
         }
-
-        this.dateTimeEditor.inputFormat = this.inputFormat;
-        this.dateTimeEditor.displayFormat = this.displayFormat;
     }
 
     public ngAfterViewChecked() {
-        // If one sets mode at run time this forces initialization of new igxInputGroup
-        // As a result a new igxInputDirective is initialized too. In ngAfterViewInit of
-        // the new directive isRequired of the igxInputGroup is set again. However
-        // ngAfterViewInit of date picker is not called again and we may finish with wrong
-        // isRequired in igxInputGroup. This is why we should set it her, only when needed
-        if (this.inputGroup && this.inputGroup.isRequired !== this.required) {
-            this.inputGroup.isRequired = this.required;
-            this._cdr.detectChanges();
-        }
-        // TODO: persist validation state when dynamically changing 'dropdown' to 'dialog' ot vice versa.
-        // For reference -> it is currently persisted if a user template is passed (as template is not recreated)
-
         if (this.labelDirective) {
             this._renderer.setAttribute(this.inputDirective.nativeElement, 'aria-labelledby', this.labelDirective.id);
         }
@@ -967,7 +960,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             }
         }
 
-        if (this.inputGroup && this.inputGroup.isRequired !== this.required) {
+        if (this.inputGroup.isRequired !== this.required) {
             this.inputGroup.isRequired = this.required;
         }
     };
@@ -975,8 +968,8 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     private subscribeToDateEditorEvents(): void {
         this.dateTimeEditor.valueChange.pipe(
             takeUntil(this.destroy$)).subscribe(newDate => {
-                this.value = newDate;
                 this.emitValueChange(this.value, newDate);
+                this.value = newDate;
             });
         this.dateTimeEditor.validationFailed.pipe(
             takeUntil(this.destroy$)).subscribe((event) => {
