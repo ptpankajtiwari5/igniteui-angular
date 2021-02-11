@@ -1,7 +1,7 @@
 import { Component, ViewChild, Input, Output, EventEmitter, HostListener, HostBinding } from '@angular/core';
-import { IgxCalendarComponent } from '../calendar/public_api';
-import { InteractionMode } from '../core/enums';
-import { IgxDatePickerActionsDirective } from './date-picker.directives';
+import { IgxCalendarComponent } from '../../calendar/public_api';
+import { InteractionMode } from '../../core/enums';
+import { IgxDatePickerActionsDirective } from '../../date-picker/date-picker.directives';
 
 /** @hidden */
 @Component({
@@ -14,7 +14,7 @@ export class IgxCalendarContainerComponent {
     public calendar: IgxCalendarComponent;
 
     @Input()
-    public mode: InteractionMode = InteractionMode.DropDown;
+    public mode = InteractionMode.DropDown;
 
     @Input()
     public vertical = false;
@@ -62,12 +62,12 @@ export class IgxCalendarContainerComponent {
     }
 
     /** Emits close event for the calendar. */
-    public closeCalendar() {
+    public emitCalendarClose() {
         this.calendarClose.emit();
     }
 
     /**  Emits today selection event for the calendar. */
-    public triggerTodaySelection() {
+    public selectToday() {
         this.todaySelection.emit();
     }
 }
