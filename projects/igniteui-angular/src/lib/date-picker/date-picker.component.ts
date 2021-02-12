@@ -444,27 +444,21 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     @ContentChild(IgxCalendarHeaderTemplateDirective)
     public headerTemplate: IgxCalendarHeaderTemplateDirective;
 
-    /** @hidden @internal */
     @ViewChild(IgxDateTimeEditorDirective)
     private dateTimeEditor: IgxDateTimeEditorDirective;
 
-    /** @hidden @internal */
     @ViewChild(IgxInputGroupComponent)
     private inputGroup: IgxInputGroupComponent;
 
-    /** @hidden @internal */
     @ViewChild(IgxLabelDirective)
     private labelDirective: IgxLabelDirective;
 
-    /** @hidden @internal */
     @ViewChild(IgxInputDirective)
     private inputDirective: IgxInputDirective;
 
-    /** @hidden @internal */
     @ContentChild(IgxCalendarSubheaderTemplateDirective)
     private subheaderTemplate: IgxCalendarSubheaderTemplateDirective;
 
-    /** @hidden @internal */
     @ContentChild(IgxDatePickerActionsDirective)
     private datePickerActionsDirective: IgxDatePickerActionsDirective;
 
@@ -808,7 +802,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         const errors = {};
         if (value) {
             if (value && this.disabledDates && isDateInRanges(value, this.disabledDates)) {
-                Object.assign({}, errors, { dateIsDisabled: true });
+                Object.assign(errors, { dateIsDisabled: true });
             }
         }
         Object.assign(errors, DatePickerUtil.validateMinMax(value, this.minValue, this.maxValue));
@@ -838,13 +832,8 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
 
     /** @hidden @internal */
     public ngAfterViewInit() {
-        if (this.isDropdown) {
-            this.attachOnKeydown();
-        }
-
-        this.attachOnTouched();
+        this.subscribeToNativeEvents();
         this.subscribeToOverlayEvents();
-        this.subscribeToInputGroupClick();
         this.subscribeToDateEditorEvents();
 
         if (this._ngControl) {
@@ -980,10 +969,26 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             });
     }
 
-    private attachOnKeydown(): void {
+    private subscribeToNativeEvents(): void {
         fromEvent(this.element.nativeElement, 'keydown')
             .pipe(takeUntil(this.destroy$))
             .subscribe((evt: KeyboardEvent) => this.onKeyDown(evt));
+
+        fromEvent(this.element.nativeElement, 'click')
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                if (!this.isDropdown) {
+                    this.open();
+                }
+            });
+
+        fromEvent(this.inputDirective.nativeElement, 'blur')
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+                if (this.collapsed) {
+                    this.updateValidityOnBlur();
+                }
+            });
     }
 
     private subscribeToOverlayEvents() {
@@ -1031,26 +1036,6 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
                 this._collapsed = true;
                 this._componentID = null;
                 this.closed.emit(event as IBaseEventArgs);
-            });
-    }
-
-    private subscribeToInputGroupClick() {
-        fromEvent(this.inputGroup.element.nativeElement, 'click')
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => {
-                if (!this.isDropdown) {
-                    this.open();
-                }
-            });
-    }
-
-    private attachOnTouched(): void {
-        fromEvent(this.inputDirective.nativeElement, 'blur')
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => {
-                if (this.collapsed) {
-                    this.updateValidityOnBlur();
-                }
             });
     }
 
