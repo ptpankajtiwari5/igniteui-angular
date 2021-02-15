@@ -1079,7 +1079,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         this.calendar.hideOutsideDays = this.hideOutsideDays;
         this.calendar.monthsViewNumber = this.displayMonthsCount;
         this.calendar.showWeekNumbers = this.showWeekNumbers;
-        this.calendar.onSelection.pipe(takeUntil(this.destroy$)).subscribe((ev: Date) => this.handleSelection(ev));
+        this.calendar.selected.pipe(takeUntil(this.destroy$)).subscribe((ev: Date) => this.handleSelection(ev));
 
         if (this.value) {
             this.calendar.value = this.value;
