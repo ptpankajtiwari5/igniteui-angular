@@ -19,7 +19,7 @@
     </div>
 </div>
 
-
+<button (click)="tree1.selectAll()">Select</button>
 
 <div class="row">
     <div class="column tree-container">
@@ -32,6 +32,9 @@
                     {{ child.CompanyName }}
                     <igx-tree-node *ngFor="let leafchild of child.ChildCompanies" [data]="leafchild">
                         {{ leafchild.CompanyName }}
+                        <igx-combo>
+
+                        </igx-combo>
                     </igx-tree-node>
                 </igx-tree-node>
             </igx-tree-node>

@@ -39,5 +39,5 @@ export class TreeSampleComponent {
     }
 
     private containsComparer: IgxTreeSearchResolver =
-    (term: any, node: IgxTreeNodeComponent<any>) => node.data.ID.ToLowerCase().indexOf(term.ToLowerCase()) > -1;
+    (term: any, node: IgxTreeNodeComponent<any>) => node.data?.ID?.toLowerCase()?.indexOf(term.toLowerCase()) > -1;
 }

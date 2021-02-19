@@ -5,7 +5,7 @@
             <ng-container *ngTemplateOutlet="expandIndicatorTemplate, context: templateContext">
             </ng-container>
         </div>
-        <div class="igx-tree-node__select-marker" (click)="selected = !selected">
+        <div class="igx-tree-node__select-marker" (click)="onSelectorClick()">
             <ng-container *ngTemplateOutlet="selectMarkerTemplate, context: templateContext">
             </ng-container>
         </div>

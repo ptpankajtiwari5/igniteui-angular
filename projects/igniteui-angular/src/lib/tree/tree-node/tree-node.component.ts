@@ -7,9 +7,9 @@ import {
     ChangeDetectorRef
 } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
-import { IgxSelectionAPIService } from '../../core/selection';
 import { ToggleAnimationPlayer, ToggleAnimationSettings } from '../../expansion-panel/toggle-animation-component';
 import { IGX_TREE_COMPONENT, IgxTree, IgxTreeNode, IGX_TREE_NODE_COMPONENT, ITreeNodeTogglingEventArgs } from '../common';
+import { IgxTreeSelectionService } from '../tree-selection.service';
 import { IgxTreeService } from '../tree.service';
 
 
@@ -75,7 +75,7 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
 
     constructor(
         @Inject(IGX_TREE_COMPONENT) public tree: IgxTree,
-        protected selectionService: IgxSelectionAPIService,
+        protected selectionService: IgxTreeSelectionService,
         protected treeService: IgxTreeService,
         protected cdr: ChangeDetectorRef,
         protected builder: AnimationBuilder,
@@ -90,14 +90,14 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
 
     @Input()
     public get selected(): boolean {
-        return this.selectionService.get(this.tree.id).has(this.id);
+        return this.selectionService.isNodeSelected(this);
     }
 
     public set selected(val: boolean) {
         if (val) {
-            this.treeService.select(this);
+            this.selectionService.selectNodeById(this.id);
         } else {
-            this.treeService.deselect(this);
+            this.selectionService.deselectNode(this.id);
         }
     }
 
@@ -142,6 +142,14 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
     }
 
     public ngAfterViewInit() {
+    }
+
+    public onSelectorClick() {
+        if(this.selected) {
+            this.selectionService.deselectNode(this.id);
+        } else {
+            this.selectionService.selectNodeById(this.id);
+        }
     }
 
     public ngOnDestroy() {
