@@ -35,7 +35,6 @@ export interface IgxTreeNode<T> {
 
 // Events
 export interface ITreeNodeSelectionEvent extends IBaseCancelableBrowserEventArgs {
-    // node: IgxTreeNode<any>;
     oldSelection: any[];
     newSelection: any[];
     added: any[];

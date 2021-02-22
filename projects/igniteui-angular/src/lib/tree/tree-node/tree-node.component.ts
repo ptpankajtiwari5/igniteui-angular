@@ -45,7 +45,7 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
     @Input()
     public data: T;
 
-    public set animationSettings(val: ToggleAnimationSettings) {}
+    public set animationSettings(val: ToggleAnimationSettings) { }
 
     public get animationSettings(): ToggleAnimationSettings {
         return this.tree.animationSettings;
@@ -91,7 +91,7 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
     /**
      * @hidden
      */
-    public get showSelectors(){
+    public get showSelectors() {
         return this.tree.selection !== IGX_TREE_SELECTION_TYPE.None;
     }
 

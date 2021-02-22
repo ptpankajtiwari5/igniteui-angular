@@ -6,16 +6,16 @@
             </ng-container>
         </div>
         <ng-container *ngIf="showSelectors">
-            <div class="igx-tree-node__select-marker" (pointerdown)="$event.preventDefault()" (click)="onSelectorClick($event)">
+            <div class="igx-tree-node__select-marker" (pointerdown)="$event.preventDefault()"
+                (click)="onSelectorClick($event)">
                 <ng-container *ngTemplateOutlet="selectMarkerTemplate, context: templateContext">
                 </ng-container>
             </div>
-        </ng-container>        
+        </ng-container>
     </div>
     <ng-content></ng-content>
 </div>
-<div #childrenContainer *ngIf="expanded"
-    class="igx-tree-node__group" role="group">
+<div #childrenContainer *ngIf="expanded" class="igx-tree-node__group" role="group">
     <ng-content select="igx-tree-node"></ng-content>
 </div>
 

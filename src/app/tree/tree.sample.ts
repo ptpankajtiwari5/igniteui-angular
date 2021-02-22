@@ -22,7 +22,7 @@ export class TreeSampleComponent {
     public singleBranchExpand = false;
 
     public get animationSettings() {
-        return  {
+        return {
             openAnimation: useAnimation(growVerIn, {
                 params: {
                     duration: `${this.animationDuration}ms`
@@ -47,8 +47,8 @@ export class TreeSampleComponent {
         this.tree.selectAll(arr, true);
     }
 
-    public nodeSelection(event){
-       console.log(event);
+    public nodeSelection(event) {
+        console.log(event);
     }
 
     public customSearch(term: string) {
@@ -57,5 +57,5 @@ export class TreeSampleComponent {
     }
 
     private containsComparer: IgxTreeSearchResolver =
-    (term: any, node: IgxTreeNodeComponent<any>) => node.data?.ID?.toLowerCase()?.indexOf(term.toLowerCase()) > -1;
+        (term: any, node: IgxTreeNodeComponent<any>) => node.data?.ID?.toLowerCase()?.indexOf(term.toLowerCase()) > -1;
 }
