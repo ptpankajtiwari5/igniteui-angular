@@ -5,10 +5,12 @@
             <ng-container *ngTemplateOutlet="expandIndicatorTemplate, context: templateContext">
             </ng-container>
         </div>
-        <div class="igx-tree-node__select-marker" (click)="onSelectorClick()">
-            <ng-container *ngTemplateOutlet="selectMarkerTemplate, context: templateContext">
-            </ng-container>
-        </div>
+        <ng-container *ngIf="showSelectors">
+            <div class="igx-tree-node__select-marker" (pointerdown)="$event.preventDefault()" (click)="onSelectorClick($event)">
+                <ng-container *ngTemplateOutlet="selectMarkerTemplate, context: templateContext">
+                </ng-container>
+            </div>
+        </ng-container>        
     </div>
     <ng-content></ng-content>
 </div>

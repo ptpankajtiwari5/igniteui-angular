@@ -1,6 +1,9 @@
 import { useAnimation } from '@angular/animations';
 import { Component, ViewChild } from '@angular/core';
-import { growVerIn, growVerOut, IgxTreeComponent, IgxTreeNodeComponent, IgxTreeSearchResolver } from 'igniteui-angular';
+import { growVerIn, growVerOut } from 'igniteui-angular';
+import { IgxTreeSearchResolver } from 'projects/igniteui-angular/src/lib/tree/common';
+import { IgxTreeNodeComponent } from 'projects/igniteui-angular/src/lib/tree/tree-node/tree-node.component';
+import { IgxTreeComponent } from 'projects/igniteui-angular/src/lib/tree/tree.component';
 import { HIERARCHICAL_SAMPLE_DATA } from '../shared/sample-data';
 
 @Component({
@@ -31,6 +34,21 @@ export class TreeSampleComponent {
                 }
             })
         };
+    }
+
+    public selectAll() {
+        const arr = [
+            this.tree.nodes.toArray()[0],
+            this.tree.nodes.toArray()[14],
+            this.tree.nodes.toArray()[1],
+            this.tree.nodes.toArray()[4]
+        ];
+
+        this.tree.selectAll(arr, true);
+    }
+
+    public nodeSelection(event){
+       console.log(event);
     }
 
     public customSearch(term: string) {

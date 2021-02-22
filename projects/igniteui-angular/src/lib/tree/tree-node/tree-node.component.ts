@@ -8,7 +8,10 @@ import {
 } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { ToggleAnimationPlayer, ToggleAnimationSettings } from '../../expansion-panel/toggle-animation-component';
-import { IGX_TREE_COMPONENT, IgxTree, IgxTreeNode, IGX_TREE_NODE_COMPONENT, ITreeNodeTogglingEventArgs } from '../common';
+import {
+    IGX_TREE_COMPONENT, IgxTree, IgxTreeNode,
+    IGX_TREE_NODE_COMPONENT, ITreeNodeTogglingEventArgs, IGX_TREE_SELECTION_TYPE
+} from '../common';
 import { IgxTreeSelectionService } from '../tree-selection.service';
 import { IgxTreeService } from '../tree.service';
 
@@ -84,6 +87,13 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
         super(builder);
     }
 
+    /**
+     * @hidden
+     */
+    public get showSelectors(){
+        return this.tree.selection !== IGX_TREE_SELECTION_TYPE.None;
+    }
+
     public get level(): number {
         return this.parentNode ? this.parentNode.level + 1 : 0;
     }
@@ -95,9 +105,9 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
 
     public set selected(val: boolean) {
         if (val) {
-            this.selectionService.selectNodeById(this.id);
+            this.selectionService.selectNode(this);
         } else {
-            this.selectionService.deselectNode(this.id);
+            this.selectionService.deselectNode(this);
         }
     }
 
@@ -144,11 +154,16 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
     public ngAfterViewInit() {
     }
 
-    public onSelectorClick() {
-        if(this.selected) {
-            this.selectionService.deselectNode(this.id);
+    public onSelectorClick(event) {
+        event.stopPropagation();
+        if (event.shiftKey) {
+            this.selectionService.selectMultipleNodes(this, event);
+            return;
+        }
+        if (this.selected) {
+            this.selectionService.deselectNode(this, event);
         } else {
-            this.selectionService.selectNodeById(this.id);
+            this.selectionService.selectNode(this, event);
         }
     }
 

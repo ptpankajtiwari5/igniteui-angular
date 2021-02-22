@@ -6,66 +6,91 @@ import { IgxTreeComponent } from './tree.component';
 @Injectable()
 export class IgxTreeSelectionService {
     public tree: IgxTreeComponent;
-    public nodeSelection: Set<string> = new Set<string>();
+    public nodeSelection: Set<IgxTreeNodeComponent<any>> = new Set<IgxTreeNodeComponent<any>>();
 
-    /** Returns array of the selected node id's. */
-    public getSelectedNodes(): Array<any> {
-        return this.nodeSelection.size ? Array.from(this.nodeSelection.keys()) : [];
+    public register(tree: IgxTreeComponent) {
+        this.tree = tree;
     }
 
-    /** Select all rows, if filtering is applied select only from filtered data. */
-    public selectAllNodes(node?: IgxTreeNodeComponent<any>[]) {
-        // const allRowIDs = this.getRowIDs(this.allData);
-        // this.selectedRowsChange.next();
-        // this.emitRowSelectionEvent(newSelection, addedRows, [], event);
-        if(node) {
-
+    /** Select all nodes if the nodes collection is empty. Otherwise, select the nodes in the nodes collection */
+    public selectAllNodes(nodes?: IgxTreeNodeComponent<any>[], clearPrevSelection?: boolean) {
+        if (nodes) {
+            let removed = [];
+            if (clearPrevSelection) {
+                removed = this.getSelectedNodes().filter(n => nodes.indexOf(n) < 0);
+            }
+            const added = nodes.filter(n => this.getSelectedNodes().indexOf(n) < 0);
+            this.emitNodeSelectionEvent(clearPrevSelection ? nodes : [...this.getSelectedNodes(), ...added], added, removed);
         } else {
-            const addedNodes = this.allNodes.filter((n: IgxTreeNodeComponent<any>) => !this.isNodeSelected(n)).map(n => n.id);
+            const addedNodes = this.allNodes.filter((n: IgxTreeNodeComponent<any>) => !this.isNodeSelected(n));
             const newSelection = this.nodeSelection.size ? this.getSelectedNodes().concat(addedNodes) : addedNodes;
-            this.emitRowSelectionEvent(newSelection, addedNodes, []);
+            this.emitNodeSelectionEvent(newSelection, addedNodes, []);
         }
     }
 
-    /** Select the specified row and emit event. */
-    public selectNodeById(nodeId, clearPrevSelection?, event?): void {
+    /** Select range from last selected node to the current specified node. */
+    public selectMultipleNodes(node: IgxTreeNodeComponent<any>, event?): void {
+        if (!this.nodeSelection.size) {
+            this.selectNode(node);
+            return;
+        }
+        const lastSelectedNodeIndex = this.tree.nodes.toArray().indexOf(this.getSelectedNodes()[this.nodeSelection.size - 1]);
+        const currentNodeIndex = this.tree.nodes.toArray().indexOf(node);
+        const nodes = this.tree.nodes.toArray().slice(Math.min(currentNodeIndex, lastSelectedNodeIndex),
+            Math.max(currentNodeIndex, lastSelectedNodeIndex) + 1);
+
+        const added = nodes.filter(_node => !this.isNodeSelected(_node));
+        const newSelection = this.getSelectedNodes().concat(added);
+        this.emitNodeSelectionEvent(newSelection, added, [], event);
+    }
+
+    /** Select the specified node and emit event. */
+    public selectNode(node: IgxTreeNodeComponent<any>, event?): void {
+        // TODO: handle cascade mode
         if (this.tree.selection === IGX_TREE_SELECTION_TYPE.None) {
             return;
         }
-        // clearPrevSelection = !this.grid.isMultiRowSelectionEnabled || clearPrevSelection;
-
-        const newSelection = clearPrevSelection ? [nodeId] : this.getSelectedNodes().indexOf(nodeId) !== -1 ?
-            this.getSelectedNodes() : [...this.getSelectedNodes(), nodeId];
-        const removed = clearPrevSelection ? this.getSelectedNodes() : [];
-        this.emitRowSelectionEvent(newSelection, [nodeId], removed, event);
+        this.emitNodeSelectionEvent([...this.getSelectedNodes(), node], [node], [], event);
     }
 
-    /** Deselect the specified row and emit event. */
-    public deselectNode(nodeId, event?): void {
-        const newSelection = this.getSelectedNodes().filter(r => r !== nodeId);
-        if (this.nodeSelection.size && this.nodeSelection.has(nodeId)) {
-            this.emitRowSelectionEvent(newSelection, [], [nodeId], event);
-        }
+    /** Deselect the specified node and emit event. */
+    public deselectNode(node: IgxTreeNodeComponent<any>, event?): void {
+        // TODO: handle cascade mode
+        const newSelection = this.getSelectedNodes().filter(r => r !== node);
+        this.emitNodeSelectionEvent(newSelection, [], [node], event);
     }
 
     /** Select specified nodes. No event is emitted. */
-    public selectNodesWithNoEvent(nodeIDs: any[], clearPrevSelection?): void {
+    public selectNodesWithNoEvent(nodes: IgxTreeNodeComponent<any>[], clearPrevSelection?: boolean): void {
+        // TODO: add to spec
+        // TODO: handle cascade mode
         if (clearPrevSelection) {
             this.nodeSelection.clear();
         }
-        nodeIDs.forEach(nodeID => this.nodeSelection.add(nodeID));
+        nodes.forEach(node => this.nodeSelection.add(node));
     }
 
-    /** Deselect specified rows. No event is emitted. */
-    public deselectNodesWithNoEvent(nodeIDs: any[]): void {
-        nodeIDs.forEach(nodeID => this.nodeSelection.delete(nodeID));
+    /** Deselect specified nodes. No event is emitted. */
+    public deselectNodesWithNoEvent(nodes: IgxTreeNodeComponent<any>[]): void {
+        // TODO: add to spec
+        // TODO: handle cascade mode
+        nodes.forEach(node => this.nodeSelection.delete(node));
+    }
+
+    public clearNodesSelection(): void {
+        this.nodeSelection.clear();
     }
 
     public isNodeSelected(node: IgxTreeNodeComponent<any>): boolean {
-        return this.nodeSelection.size > 0 && this.nodeSelection.has(node.id);
+        return this.nodeSelection.size > 0 && this.nodeSelection.has(node);
     }
 
-    public emitRowSelectionEvent(newSelection, added, removed, event?): boolean {
+    /** Returns array of the selected node id's. */
+    private getSelectedNodes(): Array<any> {
+        return this.nodeSelection.size ? Array.from(this.nodeSelection) : [];
+    }
+
+    private emitNodeSelectionEvent(newSelection, added, removed, event?): boolean {
         const currSelection = this.getSelectedNodes();
         if (this.areEqualCollections(currSelection, newSelection)) {
             return;
@@ -82,12 +107,7 @@ export class IgxTreeSelectionService {
         this.selectNodesWithNoEvent(args.newSelection, true);
     }
 
-    /** Clear nodeSelection */
-    public clearAllSelectedRows(): void {
-        this.nodeSelection.clear();
-    }
-
-    public get allNodes() {
+    private get allNodes() {
         return this.tree.nodes;
     }
 
