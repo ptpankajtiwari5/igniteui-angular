@@ -125,6 +125,27 @@ export class IgxTreeComponent implements IgxTree, OnInit, AfterViewInit, OnDestr
         }
     }
 
+    /**
+     * Deselect all nodes if the nodes collection is empty. Otherwise, deselect the nodes in the nodes collection.
+     *
+     * @example
+     * ```typescript
+     *  const arr = [
+     *      this.tree.nodes.toArray()[0],
+     *      this.tree.nodes.toArray()[1]
+     *  ];
+     *  this.tree.deselectAll(arr);
+     * ```
+     * @param nodes: IgxTreeNodeComponent<any>[]
+     */
+    public deselectAll(nodes?: IgxTreeNodeComponent<any>[]) {
+        if (nodes) {
+            this.selectionService.deselectAllNodes(nodes);
+        }  else {
+            this.selectionService.deselectAllNodes();
+        }
+    }
+
     public isNodeSelected(node: IgxTreeNodeComponent<any>): boolean {
         return this.selectionService.isNodeSelected(node);
     }

@@ -28,6 +28,16 @@ export class IgxTreeSelectionService {
         }
     }
 
+    /** Deselect all nodes if the nodes collection is empty. Otherwise, deselect the nodes in the nodes collection */
+    public deselectAllNodes(nodes?: IgxTreeNodeComponent<any>[]) {
+        if (nodes) {
+            const newSelection = this.getSelectedNodes().filter(n => nodes.indexOf(n) < 0);
+            this.emitNodeSelectionEvent(newSelection, [], nodes);
+        } else {
+            this.emitNodeSelectionEvent([], [], this.getSelectedNodes());
+        }
+    }
+
     /** Select range from last selected node to the current specified node. */
     public selectMultipleNodes(node: IgxTreeNodeComponent<any>, event?): void {
         if (!this.nodeSelection.size) {
