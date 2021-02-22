@@ -82,6 +82,7 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
         protected treeService: IgxTreeService,
         protected cdr: ChangeDetectorRef,
         protected builder: AnimationBuilder,
+        public element: ElementRef<HTMLElement>,
         @Optional() @SkipSelf() @Inject(IGX_TREE_NODE_COMPONENT) public parentNode: IgxTreeNode<any>
     ) {
         super(builder);
@@ -136,6 +137,18 @@ export class IgxTreeNodeComponent<T> extends ToggleAnimationPlayer implements Ig
         return {
             $implicit: this
         };
+    }
+
+    /**
+     * The native DOM element representing the node. Could be null in certain environments.
+     *
+     * ```typescript
+     * // get the nativeElement of the second node
+     * let nodeNativeElement = this.tree.nodes.toArray()[1].nativeElement;
+     * ```
+     */
+    public get nativeElement() {
+        return this.element.nativeElement;
     }
 
     public ngOnInit() {
