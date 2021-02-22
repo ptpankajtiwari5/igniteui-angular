@@ -4,34 +4,32 @@ import { configureTestSuite } from '../test-utils/configure-suite';
 import { Component, ViewChild } from '@angular/core';
 import { IgxTreeComponent, IgxTreeModule } from './tree.component';
 import { HIERARCHICAL_SAMPLE_DATA } from 'src/app/shared/sample-data';
-import { wait, UIInteractions } from '../test-utils/ui-interactions.spec';
+import { UIInteractions } from '../test-utils/ui-interactions.spec';
 import { TreeFunctions, TREE_NODE_DIV_SELECTION_CHECKBOX_CSS_CLASS, TREE_NODE_SELECTION_CSS_CLASS } from './tree-functions.spec';
 import { IGX_TREE_SELECTION_TYPE } from './common';
 
 describe('IgxTree - Selection', () => {
     configureTestSuite();
-    let fix;
-    let tree: IgxTreeComponent;
     beforeAll(waitForAsync(() => {
         TestBed.configureTestingModule({
             declarations: [
                 IgxTreeSimpleComponent
             ],
             imports: [IgxTreeModule, NoopAnimationsModule]
-        })
-            .compileComponents();
+        }).compileComponents();
     }));
 
     describe('UI Interaction tests', () => {
-        beforeEach(async () => {
+        let fix;
+        let tree: IgxTreeComponent;
+
+        beforeEach(fakeAsync(() => {
             fix = TestBed.createComponent(IgxTreeSimpleComponent);
             fix.detectChanges();
-
             tree = fix.componentInstance.tree;
             tree.selection = 'BiState';
-            await wait();
             fix.detectChanges();
-        });
+        }));
 
         it('Should have checkbox on each node if selection is not none', () => {
             const nodes = TreeFunctions.getAllNodes(fix);
@@ -139,7 +137,7 @@ describe('IgxTree - Selection', () => {
             expect(tree.nodeSelection.emit).toHaveBeenCalledWith(args);
         });
 
-        it('Nodes Should be selected only from checkboxes', () => {
+        it('Nodes should be selected only from checkboxes', () => {
             const firstNode = tree.nodes.toArray()[0];
             firstNode.expanded = true;
             fix.detectChanges();
@@ -245,15 +243,16 @@ describe('IgxTree - Selection', () => {
     });
 
     describe('API tests', () => {
-        beforeEach(async () => {
+        let fix;
+        let tree: IgxTreeComponent;
+
+        beforeEach(fakeAsync(() => {
             fix = TestBed.createComponent(IgxTreeSimpleComponent);
             fix.detectChanges();
-
             tree = fix.componentInstance.tree;
             tree.selection = 'BiState';
-            await wait();
             fix.detectChanges();
-        });
+        }));
 
         it('Should be able to select multiple nodes through API', () => {
             const firstNode = tree.nodes.toArray()[0];
