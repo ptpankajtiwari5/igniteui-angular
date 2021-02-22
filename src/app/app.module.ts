@@ -143,7 +143,6 @@ import { ControllerComponent } from './grid-finjs/controllers.component';
 import { CommonModule } from '@angular/common';
 
 import { GridEventsComponent } from './grid-events/grid-events.component';
-import { PagingPipe } from './grid-events/pagingPipe';
 import { TreeSampleComponent } from './tree/tree.sample';
 
 const components = [
@@ -176,7 +175,6 @@ const components = [
     ListPanningSampleComponent,
     ListPerformanceSampleComponent,
     MaskSampleComponent,
-    PagingPipe,
     DateTimeEditorSampleComponent,
     NavbarSampleComponent,
     NavdrawerSampleComponent,
@@ -307,7 +305,6 @@ const components = [
         HierarchicalRemoteService,
         GridBaseAPIService,
         IgxGridHierarchicalPipe,
-        PagingPipe,
         IgxExcelExporterService,
         IgxIconService,
         IgxCsvExporterService,
