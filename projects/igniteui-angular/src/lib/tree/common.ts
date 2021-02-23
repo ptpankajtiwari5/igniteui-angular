@@ -7,11 +7,14 @@ import { ToggleAnimationSettings } from '../expansion-panel/toggle-animation-com
 export type IgxTreeSearchResolver = (data: any, node: IgxTreeNode<any>) => boolean;
 export interface IgxTree {
     id: string;
+    /** @hidden @internal */
+    nodes: QueryList<IgxTreeNode<any>>;
     singleBranchExpand: boolean;
     selection: IGX_TREE_SELECTION_TYPE;
     selectMarker: TemplateRef<any>;
     expandIndicator: TemplateRef<any>;
     animationSettings: ToggleAnimationSettings;
+    nodeSelection: EventEmitter<ITreeNodeSelectionEvent>;
     nodeExpanding: EventEmitter<ITreeNodeTogglingEventArgs>;
     nodeExpanded: EventEmitter<ITreeNodeToggledEventArgs>;
     nodeCollapsing: EventEmitter<ITreeNodeTogglingEventArgs>;
@@ -35,10 +38,10 @@ export interface IgxTreeNode<T> {
 
 // Events
 export interface ITreeNodeSelectionEvent extends IBaseCancelableBrowserEventArgs {
-    oldSelection: any[];
-    newSelection: any[];
-    added: any[];
-    removed: any[];
+    oldSelection: IgxTreeNode<any>[];
+    newSelection: IgxTreeNode<any>[];
+    added: IgxTreeNode<any>[];
+    removed: IgxTreeNode<any>[];
     event?: Event;
 }
 
