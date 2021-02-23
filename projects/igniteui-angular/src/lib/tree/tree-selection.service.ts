@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { IgxTree, IgxTreeNode, IGX_TREE_SELECTION_TYPE, ITreeNodeSelectionEvent } from './common';
 @Injectable()
 export class IgxTreeSelectionService {
-    public tree: IgxTree;
-    public nodeSelection: Set<IgxTreeNode<any>> = new Set<IgxTreeNode<any>>();
+    private tree: IgxTree;
+    private nodeSelection: Set<IgxTreeNode<any>> = new Set<IgxTreeNode<any>>();
 
     public register(tree: IgxTree) {
         this.tree = tree;
