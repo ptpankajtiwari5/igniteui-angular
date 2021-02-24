@@ -18,19 +18,3 @@ export interface IDatePickerValidationFailedEventArgs extends IBaseEventArgs {
     datePicker: IgxDatePickerComponent;
     prevValue: Date;
 }
-
-
-/** Configures calendar format view options. */
-export interface IFormatViews {
-    day?: boolean;
-    month?: boolean;
-    year?: boolean;
-}
-
-/** Configures calendar format options. */
-export interface IFormatOptions {
-    day?: string;
-    month?: string;
-    weekday?: string;
-    year?: string;
-}

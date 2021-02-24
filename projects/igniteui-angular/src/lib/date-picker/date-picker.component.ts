@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import {
     IgxCalendarComponent, IgxCalendarHeaderTemplateDirective, IgxCalendarSubheaderTemplateDirective,
-    WEEKDAYS, isDateInRanges
+    WEEKDAYS, isDateInRanges, IFormattingViews, IFormattingOptions
 } from '../calendar/public_api';
 import {
     IgxInputDirective, IgxInputGroupComponent,
@@ -38,8 +38,7 @@ import { DeprecateMethod, DeprecateProperty } from '../core/deprecateDecorators'
 import { DatePickerUtil } from './date-picker.utils';
 import { HeaderOrientation } from '../date-common/types';
 import {
-    IDatePickerDisabledDateEventArgs, IDatePickerValidationFailedEventArgs,
-    IFormatOptions, IFormatViews
+    IDatePickerDisabledDateEventArgs, IDatePickerValidationFailedEventArgs
 } from './date-picker.common';
 import { IgxIconComponent } from '../icon/public_api';
 
@@ -80,18 +79,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      * <igx-date-picker editorTabIndex="1"></igx-date-picker>
      * ```
      */
-    @Input() public editorTabIndex: number; // TODO: move to editor provider
-
-    /**
-     * Gets/Sets the `IgxDatePickerComponent` label visibility.
-     *
-     * @remarks
-     * By default the visibility is set to true.
-     * @example
-     * <igx-date-picker [labelVisibility]="false"></igx-date-picker>
-     */
-    @Input()
-    public labelVisibility = true;
+    @Input() public editorTabIndex: number; // TODO: move to editor provider as tabindex
 
     /**
      * Gets/Sets on which day the week starts.
@@ -270,11 +258,11 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      * ```
      */
     @Input()
-    public get formatViews(): IFormatViews {
+    public get formatViews(): IFormattingViews {
         return this._formatViews;
     }
 
-    public set formatViews(formatViews: IFormatViews) {
+    public set formatViews(formatViews: IFormattingViews) {
         this._formatViews = Object.assign(this._formatViews, formatViews);
     }
 
@@ -322,8 +310,8 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      * ```
      */
     @Input()
-    public get formatOptions(): IFormatOptions {
-        return this._formatOptions;
+    public get calendarFormat(): IFormattingOptions {
+        return this._calendarFormat;
     }
 
     /**
@@ -334,8 +322,8 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      * this.datePicker.formatOptions = {  day: "numeric",  month: "long", weekday: "long", year: "numeric"};
      * ```
      */
-    public set formatOptions(formatOptions: IFormatOptions) {
-        this._formatOptions = Object.assign(this._formatOptions, formatOptions);
+    public set calendarFormat(options: IFormattingOptions) {
+        this._calendarFormat = Object.assign(this._calendarFormat, options);
     }
 
     //#endregion
@@ -393,9 +381,12 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     /**
      * Emitted when the picker's value changes.
      *
+     * @remarks
+     * Used for `two-way` bindings.
+     *
      * @example
      * ```html
-     * <igx-date-picker (valueChange)="valueChanged($event)" mode="dropdown"></igx-date-picker>
+     * <igx-date-picker [(value)]="date"></igx-date-picker>
      * ```
      */
     @Output()
@@ -471,7 +462,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     }
 
     private _value: Date;
-    private _componentID: string;
+    private _overlayId: string;
     private destroy$ = new Subject();
     private _ngControl: NgControl = null;
     private _statusChanges$: Subscription;
@@ -495,7 +486,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         closeOnEscape: true,
         outlet: this.outlet
     };
-    private _formatOptions = {
+    private _calendarFormat = {
         day: 'numeric',
         month: 'short',
         weekday: 'short',
@@ -640,9 +631,9 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             overlaySettings.target = this.inputGroupElement;
         }
 
-        this._componentID = this._overlayService
+        this._overlayId = this._overlayService
             .attach(IgxCalendarContainerComponent, overlaySettings, this._moduleRef);
-        this._overlayService.show(this._componentID);
+        this._overlayService.show(this._overlayId);
     }
 
     /**
@@ -675,7 +666,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      */
     public close(): void {
         if (!this.collapsed) {
-            this._overlayService.hide(this._componentID);
+            this._overlayService.hide(this._overlayId);
             // TODO: detach()
         }
     }
@@ -719,11 +710,10 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      * this.datePicker.deselectDate();
      * ```
      */
-    public deselect(): void {
-        this.calendar?.deselectDate();
-        const oldValue = this.value;
-        this.value = null;
-        this.emitValueChange(oldValue, this.value);
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    @DeprecateMethod('deselectDate is deprecated, use clear() instead.')
+    public deselectDate(): void {
+        this.clear();
     }
 
     /**
@@ -736,8 +726,8 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
      */
     public clear(): void {
         if (!this.disabled) {
+            this.calendar?.deselectDate();
             this.dateTimeEditor.clear();
-            this.deselect();
         }
     }
 
@@ -850,13 +840,13 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
 
     /** @hidden @internal */
     public ngOnDestroy(): void {
-        if (this._componentID) {
-            this._overlayService.hide(this._componentID);
+        if (this._overlayId) {
+            this._overlayService.hide(this._overlayId);
         }
         if (this._statusChanges$) {
             this._statusChanges$.unsubscribe();
         }
-        this.destroy$.next(true);
+        this.destroy$.next();
         this.destroy$.complete();
     }
 
@@ -926,8 +916,8 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
     }
 
     /** @hidden @internal */
-    public getEditElement(): IgxInputDirective {
-        return this.inputDirective;
+    public getEditElement(): HTMLInputElement {
+        return this.inputDirective.nativeElement;
     }
 
     /** @hidden @internal */
@@ -969,12 +959,13 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             });
     }
 
+    // TODO: host listeners
     private subscribeToNativeEvents(): void {
-        fromEvent(this.element.nativeElement, 'keydown')
+        fromEvent(this.getEditElement(), 'keydown')
             .pipe(takeUntil(this.destroy$))
             .subscribe((evt: KeyboardEvent) => this.onKeyDown(evt));
 
-        fromEvent(this.element.nativeElement, 'click')
+        fromEvent(this.getEditElement(), 'click')
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => {
                 if (!this.isDropdown) {
@@ -982,7 +973,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
                 }
             });
 
-        fromEvent(this.inputDirective.nativeElement, 'blur')
+        fromEvent(this.getEditElement(), 'blur')
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => {
                 if (this.collapsed) {
@@ -993,7 +984,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
 
     private subscribeToOverlayEvents() {
         this._overlayService.onOpening.pipe(
-            filter((overlay) => overlay.id === this._componentID),
+            filter((overlay) => overlay.id === this._overlayId),
             takeUntil(this.destroy$)).subscribe((eventArgs) => {
                 const args = eventArgs as IBaseCancelableBrowserEventArgs;
                 this.opening.emit(args);
@@ -1006,14 +997,14 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             });
 
         this._overlayService.onOpened.pipe(
-            filter((overlay) => overlay.id === this._componentID),
+            filter((overlay) => overlay.id === this._overlayId),
             takeUntil(this.destroy$)).subscribe((eventArgs) => {
                 this.opened.emit(eventArgs as IBaseEventArgs);
                 this.calendar?.daysView.focusActiveDate();
             });
 
         this._overlayService.onClosing.pipe(
-            filter(overlay => overlay.id === this._componentID),
+            filter(overlay => overlay.id === this._overlayId),
             takeUntil(this.destroy$)).subscribe((eventArgs) => {
                 const args = eventArgs as IBaseCancelableBrowserEventArgs;
                 this.closing.emit(args);
@@ -1031,10 +1022,10 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
             });
 
         this._overlayService.onClosed.pipe(
-            filter(overlay => overlay.id === this._componentID),
+            filter(overlay => overlay.id === this._overlayId),
             takeUntil(this.destroy$)).subscribe((event) => {
                 this._collapsed = true;
-                this._componentID = null;
+                this._overlayId = null;
                 this.closed.emit(event as IBaseEventArgs);
             });
     }
@@ -1067,7 +1058,7 @@ export class IgxDatePickerComponent extends PickersBaseDirective implements Cont
         this.calendar = componentInstance.calendar;
         const isVertical = this.headerOrientation === HeaderOrientation.Vertical;
         this.calendar.hasHeader = !this.isDropdown;
-        this.calendar.formatOptions = this.formatOptions;
+        this.calendar.formatOptions = this.calendarFormat;
         this.calendar.formatViews = this.formatViews;
         this.calendar.locale = this.locale;
         this.calendar.vertical = isVertical;
